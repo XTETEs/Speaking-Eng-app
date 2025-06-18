@@ -1,0 +1,9 @@
+
+{
+  "name": "BelAI: English Conversation Practice",
+  "description": "An interactive application for practicing English conversation with an advanced AI, featuring realistic dialogues, personalized feedback, and adaptive learning scenarios.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "prompt": ""
+}
