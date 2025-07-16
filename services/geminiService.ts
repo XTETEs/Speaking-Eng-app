@@ -1,15 +1,10 @@
-
-import { GoogleGenAI, GenerateContentResponse, Chat, Content, Part, GroundingAttribution } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse, Chat, Content, Part, Type } from "@google/genai";
+import { API_KEY } from '../config';
 import { GEMINI_MODEL_TEXT } from '../constants';
 import { FeedbackItem, GroundingChunk } from "../types";
 
-// Ensure API_KEY is accessed from environment variables
-// In a Vite/Create React App setup, this would be process.env.REACT_APP_API_KEY or import.meta.env.VITE_API_KEY
-// For this environment, we assume process.env.API_KEY is available.
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  console.error("API_KEY for Gemini is not set. Please set the API_KEY environment variable.");
+if (!API_KEY || API_KEY === "YOUR_API_KEY") {
+  console.error("API_KEY for Gemini is not set. Please update the API_KEY in config.ts.");
   // alert("Gemini API Key is not configured. The AI features will not work.");
 }
 
@@ -64,17 +59,31 @@ Provide only the JSON array.
       contents: prompt,
       config: {
         responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              type: {
+                type: Type.STRING,
+                description: "The type of feedback, e.g., 'grammar', 'vocabulary', 'fluency', 'pronunciation', 'general'."
+              },
+              message: {
+                type: Type.STRING,
+                description: "The constructive feedback message."
+              },
+              suggestion: {
+                type: Type.STRING,
+                description: "An optional suggestion for improvement."
+              }
+            },
+            required: ["type", "message"]
+          }
+        }
       }
     });
 
-    let jsonStr = response.text.trim();
-    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s; // Matches ```json ... ``` or ``` ... ```
-    const match = jsonStr.match(fenceRegex);
-    if (match && match[2]) {
-      jsonStr = match[2].trim();
-    }
-    
-    const parsedData = JSON.parse(jsonStr);
+    const parsedData = JSON.parse(response.text);
     if (Array.isArray(parsedData)) {
       // Validate structure, though it's simple here
       return parsedData.filter(item => item.type && item.message) as FeedbackItem[];
@@ -106,17 +115,16 @@ Respond ONLY with a JSON array of strings. Example: ["What do you mean by that?"
       contents: prompt,
       config: {
         responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+          },
+        },
       }
     });
 
-    let jsonStr = response.text.trim();
-    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = jsonStr.match(fenceRegex);
-    if (match && match[2]) {
-      jsonStr = match[2].trim();
-    }
-
-    const parsedData = JSON.parse(jsonStr);
+    const parsedData = JSON.parse(response.text);
     if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'string')) {
       return parsedData as string[];
     }

@@ -586,7 +586,7 @@ export const SCENARIOS_BY_LEVEL: Record<CEFRLevel, Scenario[]> = {
   ],
 };
 
-export const GEMINI_MODEL_TEXT = "gemini-2.5-flash-preview-04-17";
+export const GEMINI_MODEL_TEXT = "gemini-2.5-flash";
 
 export const DEFAULT_USER_SETTINGS = {
   aiVoiceEnabled: true,

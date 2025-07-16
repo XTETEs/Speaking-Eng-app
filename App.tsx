@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Chat } from '@google/genai';
 import Header from './components/Header';
@@ -10,6 +9,7 @@ import { Scenario, Message, FeedbackItem, UserSettings, CEFRLevel, GroundingChun
 import { DEFAULT_USER_SETTINGS, APP_NAME, GEMINI_MODEL_TEXT } from './constants'; // Added GEMINI_MODEL_TEXT
 import { createChatSession, sendMessageToChat, getFeedbackOnUserMessage, getHintSuggestions } from './services/geminiService';
 import useSpeechSynthesis from './hooks/useSpeechSynthesis';
+import { API_KEY } from './config';
 
 type AppView = 'scenario_selection' | 'chat';
 
@@ -76,8 +76,8 @@ const App: React.FC = () => {
   }, []); 
 
   useEffect(() => {
-    if (!process.env.API_KEY) {
-      setAppError("Gemini API Key is not configured. AI features will be limited or non-functional. Please ensure the API_KEY environment variable is set.");
+    if (!API_KEY || API_KEY === "YOUR_API_KEY") {
+      setAppError("Gemini API Key is not configured. Please add your key to the 'config.ts' file. AI features will be limited or non-functional.");
     }
   }, []);
   
@@ -286,14 +286,14 @@ const App: React.FC = () => {
         onToggleSidePanel={toggleSidePanelVisibility}
       />
       
-      {appError && !appError.toLowerCase().includes("api key") && ( 
+      {appError && !(!API_KEY || API_KEY === "YOUR_API_KEY") && ( 
         <div className="bg-red-600 text-white p-3 text-sm text-center shadow-md">
           <strong>Application Error:</strong> {appError}
         </div>
       )}
-       { !process.env.API_KEY && (
+       { (!API_KEY || API_KEY === "YOUR_API_KEY") && (
          <div className="bg-red-700 text-white p-4 text-sm font-semibold text-center shadow-lg">
-           <strong>Critical Error:</strong> The API_KEY for Gemini is not configured. AI functionalities are disabled. Please contact support or check environment configuration.
+           <strong>Critical Error:</strong> The API_KEY for Gemini is not configured. Please add your key to the <strong>config.ts</strong> file. AI functionalities are disabled.
          </div>
        )}
 
