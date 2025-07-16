@@ -18,4 +18,4 @@
 //
 // =================================================================================
 
-export const API_KEY = "YAIzaSyDcPWTHawJ-MuhmWSTJNLvWJ9OcMrbPr3E";
+export const API_KEY = "AIzaSyDcPWTHawJ-MuhmWSTJNLvWJ9OcMrbPr3E";
